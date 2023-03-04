@@ -34,6 +34,21 @@ func TestParse(t *testing.T) {
 	}
 }
 
+func TestSample(t *testing.T) {
+	err := shelldiff.Diff(`# get config
+C=...
+
+# compute
+R=C+D
+
+# print result
+echo $R`, `# compute
+R=C-D`, os.Stdout)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestDiff(t *testing.T) {
 	t.Setenv("NO_COLOR", "true")
 	f1, err := os.ReadFile("testdata/test1.sh")
