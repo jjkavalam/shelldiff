@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-func diff(this Script, that Script, w io.StringWriter) error {
+func DiffScripts(this Script, that Script, w io.StringWriter) error {
 	// two sections that have the same name identify points in the script that needs to match
 	compareFn := func(a, b *ScriptSection) bool {
 		return a.Name == b.Name
@@ -25,7 +25,7 @@ func diff(this Script, that Script, w io.StringWriter) error {
 			if compareFn(this[i], common[k]) {
 				break
 			}
-			_, err := w.WriteString("-" + Red(shorten(this[i].String())) + "\n")
+			_, err := w.WriteString("-" + red(shorten(this[i].String())) + "\n")
 			if err != nil {
 				return err
 			}
@@ -35,7 +35,7 @@ func diff(this Script, that Script, w io.StringWriter) error {
 			if compareFn(that[j], common[k]) {
 				break
 			}
-			_, err := w.WriteString("+" + Green(shorten(that[j].String())) + "\n")
+			_, err := w.WriteString("+" + green(shorten(that[j].String())) + "\n")
 			if err != nil {
 				return err
 			}
@@ -44,7 +44,7 @@ func diff(this Script, that Script, w io.StringWriter) error {
 		if i < len(this) && j < len(that) {
 			// compare
 			if *this[i] != *that[j] {
-				_, err := w.WriteString(fmt.Sprintf("-%s\n+%s", Red(this[i].String()), Green(that[j].String())) + "\n")
+				_, err := w.WriteString(fmt.Sprintf("-%s\n+%s", red(this[i].String()), green(that[j].String())) + "\n")
 				if err != nil {
 					return err
 				}
@@ -62,14 +62,14 @@ func diff(this Script, that Script, w io.StringWriter) error {
 	}
 
 	for ; i < len(this); i++ {
-		_, err := w.WriteString("-" + Red(shorten(this[i].String())) + "\n")
+		_, err := w.WriteString("-" + red(shorten(this[i].String())) + "\n")
 		if err != nil {
 			return err
 		}
 	}
 
 	for ; j < len(that); j++ {
-		_, err := w.WriteString("+" + Green(shorten(that[j].String())) + "\n")
+		_, err := w.WriteString("+" + green(shorten(that[j].String())) + "\n")
 		if err != nil {
 			return err
 		}

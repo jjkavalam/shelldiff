@@ -13,15 +13,15 @@ const cBold = "1;37"
 const cRed = "0;31"
 const cGreen = "0;32"
 
-func Bold(str string) string {
+func bold(str string) string {
 	return colorise(str, cBold)
 }
 
-func Red(str string) string {
+func red(str string) string {
 	return colorise(str, cRed)
 }
 
-func Green(str string) string {
+func green(str string) string {
 	return colorise(str, cGreen)
 }
 
