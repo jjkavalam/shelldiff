@@ -61,6 +61,20 @@ func diff(this Script, that Script, w io.StringWriter) error {
 
 	}
 
+	for ; i < len(this); i++ {
+		_, err := w.WriteString("-" + Red(shorten(this[i].String())) + "\n")
+		if err != nil {
+			return err
+		}
+	}
+
+	for ; j < len(that); j++ {
+		_, err := w.WriteString("+" + Green(shorten(that[j].String())) + "\n")
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
