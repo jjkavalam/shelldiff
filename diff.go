@@ -19,6 +19,8 @@ func DiffScripts(this Script, that Script, w io.StringWriter) error {
 	i := 0
 	j := 0
 
+	foundSomeDifference := false
+
 	for k := range common {
 
 		for ; i < len(this); i++ {
@@ -29,6 +31,7 @@ func DiffScripts(this Script, that Script, w io.StringWriter) error {
 			if err != nil {
 				return err
 			}
+			foundSomeDifference = true
 		}
 
 		for ; j < len(that); j++ {
@@ -39,6 +42,7 @@ func DiffScripts(this Script, that Script, w io.StringWriter) error {
 			if err != nil {
 				return err
 			}
+			foundSomeDifference = true
 		}
 
 		if i < len(this) && j < len(that) {
@@ -48,6 +52,7 @@ func DiffScripts(this Script, that Script, w io.StringWriter) error {
 				if err != nil {
 					return err
 				}
+				foundSomeDifference = true
 			} else {
 				_, err := w.WriteString(shorten(this[i].String()) + "\n")
 				if err != nil {
@@ -66,6 +71,7 @@ func DiffScripts(this Script, that Script, w io.StringWriter) error {
 		if err != nil {
 			return err
 		}
+		foundSomeDifference = true
 	}
 
 	for ; j < len(that); j++ {
@@ -73,8 +79,15 @@ func DiffScripts(this Script, that Script, w io.StringWriter) error {
 		if err != nil {
 			return err
 		}
+		foundSomeDifference = true
 	}
 
+	if !foundSomeDifference {
+		_, err := w.WriteString("There are no differences !\n")
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
