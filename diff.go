@@ -3,6 +3,7 @@ package shelldiff
 import (
 	"fmt"
 	"io"
+	"strings"
 )
 
 func DiffScripts(this Script, that Script, w io.StringWriter) error {
@@ -54,7 +55,7 @@ func DiffScripts(this Script, that Script, w io.StringWriter) error {
 				}
 				foundSomeDifference = true
 			} else {
-				_, err := w.WriteString(shorten(this[i].String()) + "\n")
+				_, err := w.WriteString(shortenFirstLine(this[i].String()) + "\n")
 				if err != nil {
 					return err
 				}
@@ -91,9 +92,28 @@ func DiffScripts(this Script, that Script, w io.StringWriter) error {
 	return nil
 }
 
+// shortenFirstLine only ever prints the first line and also trims the string to a certain length
+func shortenFirstLine(s string) string {
+	nlPos := strings.Index(s, "\n")
+	if nlPos == -1 {
+		return shortenHelper(s, true)
+	}
+	return shortenHelper(s[:nlPos], false) + "..."
+}
+
+// shorten trims the string to a certain length
 func shorten(s string) string {
+	return shortenHelper(s, true)
+}
+
+func shortenHelper(s string, ellipsis bool) string {
 	if len(s) < OptionShortenValueDiffs {
 		return s
 	}
-	return s[:OptionShortenValueDiffs] + "..."
+	s = s[:OptionShortenValueDiffs]
+	if ellipsis {
+		return s + "..."
+	} else {
+		return s
+	}
 }

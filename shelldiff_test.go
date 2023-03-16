@@ -19,7 +19,7 @@ func TestParse(t *testing.T) {
 	expected := [][]string{
 		{"Section 1", "a\nb\n\nc"},
 		{"Section 2", "d"},
-		{"Section 3", "e"},
+		{"Section 3", "e\nf"},
 	}
 	if len(expected) != len(script) {
 		t.Fatalf("expected %d sections; got %d sections", len(expected), len(script))
@@ -76,7 +76,7 @@ b
 c
 +[Section 1] d
 -[Section 2] d
-[Section 3] e
+[Section 3] e...
 `
 
 	if expected != outBuf.String() {
