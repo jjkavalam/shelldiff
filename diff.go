@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func DiffScripts(this Script, that Script, w io.StringWriter) error {
+func DiffScripts(this Script, that Script, w io.StringWriter) {
 	// two sections that have the same name identify points in the script that needs to match
 	compareFn := func(a, b *ScriptSection) bool {
 		return a.Name == b.Name
@@ -28,10 +28,7 @@ func DiffScripts(this Script, that Script, w io.StringWriter) error {
 			if compareFn(this[i], common[k]) {
 				break
 			}
-			_, err := w.WriteString("-" + red(shorten(this[i].String())) + "\n")
-			if err != nil {
-				return err
-			}
+			must(w.WriteString("-" + red(shorten(this[i].String())) + "\n"))
 			foundSomeDifference = true
 		}
 
@@ -39,26 +36,17 @@ func DiffScripts(this Script, that Script, w io.StringWriter) error {
 			if compareFn(that[j], common[k]) {
 				break
 			}
-			_, err := w.WriteString("+" + green(shorten(that[j].String())) + "\n")
-			if err != nil {
-				return err
-			}
+			must(w.WriteString("+" + green(shorten(that[j].String())) + "\n"))
 			foundSomeDifference = true
 		}
 
 		if i < len(this) && j < len(that) {
 			// compare
 			if *this[i] != *that[j] {
-				_, err := w.WriteString(fmt.Sprintf("-%s\n+%s", red(this[i].String()), green(that[j].String())) + "\n")
-				if err != nil {
-					return err
-				}
+				must(w.WriteString(fmt.Sprintf("-%s\n+%s", red(this[i].String()), green(that[j].String())) + "\n"))
 				foundSomeDifference = true
 			} else {
-				_, err := w.WriteString(shortenFirstLine(this[i].String()) + "\n")
-				if err != nil {
-					return err
-				}
+				must(w.WriteString(shortenFirstLine(this[i].String()) + "\n"))
 			}
 		}
 
@@ -68,28 +56,18 @@ func DiffScripts(this Script, that Script, w io.StringWriter) error {
 	}
 
 	for ; i < len(this); i++ {
-		_, err := w.WriteString("-" + red(shorten(this[i].String())) + "\n")
-		if err != nil {
-			return err
-		}
+		must(w.WriteString("-" + red(shorten(this[i].String())) + "\n"))
 		foundSomeDifference = true
 	}
 
 	for ; j < len(that); j++ {
-		_, err := w.WriteString("+" + green(shorten(that[j].String())) + "\n")
-		if err != nil {
-			return err
-		}
+		must(w.WriteString("+" + green(shorten(that[j].String())) + "\n"))
 		foundSomeDifference = true
 	}
 
 	if !foundSomeDifference {
-		_, err := w.WriteString("There are no differences !\n")
-		if err != nil {
-			return err
-		}
+		must(w.WriteString("There are no differences !\n"))
 	}
-	return nil
 }
 
 // shortenFirstLine only ever prints the first line and also trims the string to a certain length

@@ -35,7 +35,8 @@ func Diff(s1 string, s2 string, sw io.StringWriter) error {
 	if err != nil {
 		return err
 	}
-	return DiffScripts(sc1, sc2, sw)
+	DiffScripts(sc1, sc2, sw)
+	return nil
 }
 
 func Parse(s string) (Script, error) {
