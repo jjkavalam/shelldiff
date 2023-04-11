@@ -77,10 +77,13 @@ func (p *parser) parse() []*ScriptSection {
 	return sections
 }
 
-// 	find first REGULAR line; start a new section and Name with last seen COMMENT
-//	accumulate subsequent lines under the section until another COMMENT or EOF is reached
+// find first REGULAR line; start a new section and Name with last seen "comment heading"
+// accumulate subsequent lines under the section until another COMMENT or EOF is reached
+//
+// a "comment heading" is the first non-empty line in a block of comments
 func (p *parser) parseSection() *ScriptSection {
-	var label string
+	var commentBlock []string
+
 outer1:
 	for p.peek() != nil {
 		t := p.peek()
@@ -88,12 +91,17 @@ outer1:
 		case *comment:
 			text := strings.TrimSpace(strings.TrimLeft(tt.Label, "#"))
 			if text != "" {
-				label = text
+				commentBlock = append(commentBlock, text)
 			}
-		case *regular:
+		case *regular, *empty:
 			break outer1
 		}
 		p.pop()
+	}
+
+	var label string
+	if len(commentBlock) > 0 {
+		label = commentBlock[0]
 	}
 
 	var sb strings.Builder
@@ -113,21 +121,17 @@ outer2:
 		p.pop()
 	}
 
-	return newScriptSection(label, trimTrailingEmptyLines(sb.String()))
+	return newScriptSection(label, trimEmptyLines(sb.String()))
 
 }
 
-func trimTrailingEmptyLines(s string) string {
-	// Split the multiline string into lines
+func trimEmptyLines(s string) string {
 	lines := strings.Split(s, "\n")
-
-	// Remove trailing empty lines
-	for len(lines) > 0 && strings.TrimSpace(lines[len(lines)-1]) == "" {
+	for len(lines) > 0 && lines[0] == "" {
+		lines = lines[1:]
+	}
+	for len(lines) > 0 && lines[len(lines)-1] == "" {
 		lines = lines[:len(lines)-1]
 	}
-
-	// Join the lines back into a string
-	result := strings.Join(lines, "\n")
-
-	return result
+	return strings.Join(lines, "\n")
 }

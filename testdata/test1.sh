@@ -11,7 +11,7 @@ c
 
 #
 # Section 2
-#
+# With more detailed comments
 
 d
 
