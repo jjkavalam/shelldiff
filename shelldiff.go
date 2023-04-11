@@ -26,17 +26,18 @@ func (ss *ScriptSection) String() string {
 	return fmt.Sprintf("[%s] %s", ss.Name, ss.Contents)
 }
 
-func Diff(s1 string, s2 string, sw io.StringWriter) error {
+// Diff compares the given strings and returns true if there are no differences between them
+func Diff(s1 string, s2 string, sw io.StringWriter) (bool, error) {
 	sc1, err := Parse(s1)
 	if err != nil {
-		return err
+		return false, err
 	}
 	sc2, err := Parse(s2)
 	if err != nil {
-		return err
+		return false, err
 	}
-	DiffScripts(sc1, sc2, sw)
-	return nil
+	d := DiffScripts(sc1, sc2, sw)
+	return d, nil
 }
 
 func Parse(s string) (Script, error) {

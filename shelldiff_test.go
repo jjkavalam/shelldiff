@@ -35,7 +35,7 @@ func TestParse(t *testing.T) {
 }
 
 func TestSample(t *testing.T) {
-	err := shelldiff.Diff(`# get config
+	d, err := shelldiff.Diff(`# get config
 C=...
 
 # compute
@@ -44,6 +44,9 @@ R=C+D
 # print result
 echo $R`, `# compute
 R=C-D`, os.Stdout)
+	if d {
+		t.Error("expected to be different")
+	}
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,9 +65,13 @@ func TestDiff(t *testing.T) {
 
 	var outBuf bytes.Buffer
 
-	err = shelldiff.Diff(string(f1), string(f2), &outBuf)
+	d, err := shelldiff.Diff(string(f1), string(f2), &outBuf)
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if d {
+		t.Error("expected to be different")
 	}
 
 	t.Log(outBuf.String())

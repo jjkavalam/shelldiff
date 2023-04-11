@@ -6,7 +6,8 @@ import (
 	"strings"
 )
 
-func DiffScripts(this Script, that Script, w io.StringWriter) {
+// DiffScripts compares scripts and returns true if they have no difference between them
+func DiffScripts(this Script, that Script, w io.StringWriter) bool {
 	// two sections that have the same name identify points in the script that needs to match
 	compareFn := func(a, b *ScriptSection) bool {
 		return a.Name == b.Name
@@ -68,6 +69,8 @@ func DiffScripts(this Script, that Script, w io.StringWriter) {
 	if !foundSomeDifference {
 		must(w.WriteString("There are no differences !\n"))
 	}
+
+	return !foundSomeDifference
 }
 
 // shortenFirstLine only ever prints the first line and also trims the string to a certain length
