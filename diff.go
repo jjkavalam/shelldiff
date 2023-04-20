@@ -1,7 +1,6 @@
 package shelldiff
 
 import (
-	"fmt"
 	"io"
 	"strings"
 )
@@ -9,6 +8,8 @@ import (
 func diff[T interface {
 	String() string
 	Equals(other T) bool
+	// WriteDiff is called if Equals return false
+	WriteDiff(other T, w io.StringWriter)
 }](this []T, that []T, w io.StringWriter, compareFn func(a, b T) bool) bool {
 	// find the longest common subsequence of matching sections
 	common := longestCommonSubsequence(this, that, compareFn)
@@ -41,7 +42,8 @@ func diff[T interface {
 		if i < len(this) && j < len(that) {
 			// compare
 			if !(this[i]).Equals(that[j]) {
-				must(w.WriteString(fmt.Sprintf("-%s\n+%s", red(this[i].String()), green(that[j].String())) + "\n"))
+				this[i].WriteDiff(that[j], w)
+				must(w.WriteString("\n"))
 				foundSomeDifference = true
 			} else {
 				must(w.WriteString(shortenFirstLine(this[i].String()) + "\n"))

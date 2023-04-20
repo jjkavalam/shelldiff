@@ -30,6 +30,13 @@ func (ss *ScriptSection) Equals(other *ScriptSection) bool {
 	return *ss == *other
 }
 
+func (ss *ScriptSection) WriteDiff(other *ScriptSection, w io.StringWriter) {
+	must(w.WriteString("-"))
+	must(w.WriteString(red(ss.String())))
+	must(w.WriteString("\n+"))
+	must(w.WriteString(green(other.String())))
+}
+
 // Diff compares the given strings and returns true if there are no differences between them
 func Diff(s1 string, s2 string, sw io.StringWriter) (bool, error) {
 	sc1, err := Parse(s1)
