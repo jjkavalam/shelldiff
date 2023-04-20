@@ -6,15 +6,12 @@ import (
 	"strings"
 )
 
-// DiffScripts compares scripts and returns true if they have no difference between them
-func DiffScripts(this Script, that Script, w io.StringWriter) bool {
-	// two sections that have the same name identify points in the script that needs to match
-	compareFn := func(a, b *ScriptSection) bool {
-		return a.Name == b.Name
-	}
-
+func diff[T interface {
+	String() string
+	Equals(other T) bool
+}](this []T, that []T, w io.StringWriter, compareFn func(a, b T) bool) bool {
 	// find the longest common subsequence of matching sections
-	common := longestCommonSubsequence[*ScriptSection](this, that, compareFn)
+	common := longestCommonSubsequence(this, that, compareFn)
 
 	// keep a cursor for each side; advance each to the next match in the common sequence;
 	// anything skipped on this was deleted; while anything skipped on that was added
@@ -29,7 +26,7 @@ func DiffScripts(this Script, that Script, w io.StringWriter) bool {
 			if compareFn(this[i], common[k]) {
 				break
 			}
-			must(w.WriteString("-" + red(shorten(this[i].String())) + "\n"))
+			must(w.WriteString("-" + red(shorten((this[i]).String())) + "\n"))
 			foundSomeDifference = true
 		}
 
@@ -37,13 +34,13 @@ func DiffScripts(this Script, that Script, w io.StringWriter) bool {
 			if compareFn(that[j], common[k]) {
 				break
 			}
-			must(w.WriteString("+" + green(shorten(that[j].String())) + "\n"))
+			must(w.WriteString("+" + green(shorten((that[j]).String())) + "\n"))
 			foundSomeDifference = true
 		}
 
 		if i < len(this) && j < len(that) {
 			// compare
-			if *this[i] != *that[j] {
+			if !(this[i]).Equals(that[j]) {
 				must(w.WriteString(fmt.Sprintf("-%s\n+%s", red(this[i].String()), green(that[j].String())) + "\n"))
 				foundSomeDifference = true
 			} else {

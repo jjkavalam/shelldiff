@@ -26,6 +26,10 @@ func (ss *ScriptSection) String() string {
 	return fmt.Sprintf("[%s] %s", ss.Name, ss.Contents)
 }
 
+func (ss *ScriptSection) Equals(other *ScriptSection) bool {
+	return *ss == *other
+}
+
 // Diff compares the given strings and returns true if there are no differences between them
 func Diff(s1 string, s2 string, sw io.StringWriter) (bool, error) {
 	sc1, err := Parse(s1)
@@ -38,6 +42,15 @@ func Diff(s1 string, s2 string, sw io.StringWriter) (bool, error) {
 	}
 	d := DiffScripts(sc1, sc2, sw)
 	return d, nil
+}
+
+// DiffScripts compares scripts and returns true if they have no difference between them
+func DiffScripts(this Script, that Script, w io.StringWriter) bool {
+	// two sections that have the same name identify points in the script that needs to match
+	compareFn := func(a, b *ScriptSection) bool {
+		return a.Name == b.Name
+	}
+	return diff(this, that, w, compareFn)
 }
 
 func Parse(s string) (Script, error) {
