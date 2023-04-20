@@ -77,11 +77,13 @@ func TestDiff(t *testing.T) {
 	t.Log(outBuf.String())
 
 	expected := `+[Section 0] x
--[Section 1] a
-b
+[Section 1] -/+
+    a
+    -b
+    -
+    c
+    +d
 
-c
-+[Section 1] d
 -[Section 2] d
 [Section 3] e...
 `

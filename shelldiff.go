@@ -31,10 +31,9 @@ func (ss *ScriptSection) Equals(other *ScriptSection) bool {
 }
 
 func (ss *ScriptSection) WriteDiff(other *ScriptSection, w io.StringWriter) {
-	must(w.WriteString("-"))
-	must(w.WriteString(red(ss.String())))
-	must(w.WriteString("\n+"))
-	must(w.WriteString(green(other.String())))
+	must(w.WriteString(fmt.Sprintf("[%s] -/+\n", ss.Name)))
+	iw := newWriterWithIndent(w, 4)
+	diffLines(ss.Contents, other.Contents, iw)
 }
 
 // Diff compares the given strings and returns true if there are no differences between them

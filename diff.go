@@ -5,6 +5,9 @@ import (
 	"strings"
 )
 
+// diff takes slices of diffable objects and writes the diff to w
+// compareFn is used to identify items that are common; note that a pair of items need not be identical to be
+// identified as "common"
 func diff[T interface {
 	String() string
 	Equals(other T) bool

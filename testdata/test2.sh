@@ -9,6 +9,8 @@ x
 # Section 1
 #
 
+a
+c
 d
 
 #
