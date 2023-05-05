@@ -17,6 +17,7 @@ func TestParse(t *testing.T) {
 		t.Fatal(err)
 	}
 	expected := [][]string{
+		{"!/bin/bash", ""},
 		{"Section 1", "a\nb\n\nc"},
 		{"Section 2", "d"},
 		{"Section 3", "e\nf"},
@@ -76,7 +77,8 @@ func TestDiff(t *testing.T) {
 
 	t.Log(outBuf.String())
 
-	expected := `+[Section 0] x
+	expected := `[!/bin/bash] 
++[Section 0] x
 [Section 1] -/+
     a
     -b

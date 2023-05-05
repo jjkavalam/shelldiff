@@ -66,6 +66,11 @@ func (p *parser) pop() token {
 func (p *parser) parse() []*ScriptSection {
 	sections := make([]*ScriptSection, 0)
 
+	// she bang section should be parsed even if it otherwise constitutes an "empty" section
+	if section, ok := p.tryParseSheBang(); ok {
+		sections = append(sections, section)
+	}
+
 	for p.peek() != nil {
 		section := p.parseSection()
 		// skip empty sections
@@ -75,6 +80,18 @@ func (p *parser) parse() []*ScriptSection {
 	}
 
 	return sections
+}
+
+func (p *parser) tryParseSheBang() (*ScriptSection, bool) {
+	if p.peek() != nil {
+		if tt, ok := p.peek().(*comment); ok {
+			if strings.HasPrefix(tt.Label, "!") {
+				p.pop()
+				return newScriptSection(tt.Label, ""), true
+			}
+		}
+	}
+	return nil, false
 }
 
 // find first REGULAR line; start a new section and Name with last seen "comment heading"
